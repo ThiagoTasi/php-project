@@ -1,8 +1,8 @@
 <?php 
 include 'conn/connect.php';
-$lista = $conn->query("select * from vw_produtos where destaque = 'Sim' ");
-$row_produto = $lista->fetch_assoc();
-$num_linhas = $lista->num_rows;
+$lista = $pdo->query("select * from vw_produtos where destaque = 'Sim' ");
+$row_produto = $lista->fetch(PDO::FETCH_ASSOC);
+$num_linhas = $lista->rowCount();
 
 ?>
 
@@ -52,7 +52,7 @@ $num_linhas = $lista->num_rows;
                 </div>
                 
             </div>
-      <?php }while($row_produto=$lista->fetch_assoc()); ?>
+      <?php }while($row_produto=$lista->fetch(PDO::FETCH_ASSOC)); ?>
     </div>
 
 <?php }?>

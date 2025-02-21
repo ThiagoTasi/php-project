@@ -2,9 +2,9 @@
 include "conn/connect.php";
 $idTipo = $_GET['id_tipo'];
 $rotulo = $_GET['rotulo'];
-$listaPorTipo = $conn->query('select * from vw_produtos where tipo_id='.$idTipo);
-$rowPorTipo = $listaPorTipo->fetch_assoc();
-$numLinhas = $listaPorTipo->num_rows;
+$listaPorTipo = $pdo->query('select * from vw_produtos where tipo_id='.$idTipo);
+$rowPorTipo = $listaPorTipo->fetch(PDO::FETCH_ASSOC);
+$numLinhas = $listaPorTipo->rowCount();
 
 ?>
 <!DOCTYPE html>
@@ -76,7 +76,7 @@ $numLinhas = $listaPorTipo->num_rows;
 
                         </div>
                     </div>
-                <?php } while ($rowPorTipo = $listaPorTipo->fetch_assoc()) ?>
+                <?php } while ($rowPorTipo = $listaPorTipo->fetch((PDO::FETCH_ASSOC))); ?>
             </div>
         <?php } ?>
 

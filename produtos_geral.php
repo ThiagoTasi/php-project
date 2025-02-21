@@ -1,8 +1,8 @@
-<?php 
+<?php
 include 'conn/connect.php';
-$lista = $conn->query('select * from vw_produtos');
-$row_produtos = $lista->fetch_assoc();
-$num_linhas = $lista->num_rows;
+$lista = $pdo->query('select * from vw_produtos');
+$row_produtos = $lista->fetch(PDO::FETCH_ASSOC);
+$num_linhas = $lista->rowCount();
 ?>
 
 <!-- Mostrar se a consulta retornar vazio -->
@@ -46,7 +46,7 @@ $num_linhas = $lista->num_rows;
                 </div>
                 
             </div>
-        <?php }while($row_produtos = $lista->fetch_assoc()); ?>
+        <?php }while($row_produtos = $lista->fetch(PDO::FETCH_ASSOC)); ?>
     </div>
 
 <?php } ?>

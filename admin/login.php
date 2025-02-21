@@ -6,7 +6,7 @@ if($_POST){
 $login = $_POST['login'];
 $senha = $_POST['senha'];
 $loginResult = $conn->query("select * from usuarios where login = '$login' and senha = md5('$senha')");
-$rowLogin = $loginResult->fetch_assoc();
+$rowLogin = $loginResult->fetch(PDO::FETCH_ASSOC);
 // var_dump($rowLogin);
 // die();
 $numRow = $loginResult->num_rows;

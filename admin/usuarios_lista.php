@@ -2,9 +2,10 @@
 include "acesso_com.php";
 include "../conn/connect.php";
 
-$lista = $conn->query("select * from usuarios order by login");
-$row = $lista->fetch_assoc();
-$numrow = $lista->num_rows;
+ $lista = $conn->query("select * from usuarios order by login");
+ $row = $lista->fetch(PDO::FETCH_ASSOC);
+ $numrow = $lista->rowCount();
+
 
 ?>
 <!-- html:5 -->

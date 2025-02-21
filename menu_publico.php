@@ -1,7 +1,7 @@
 <?php
 include "conn/connect.php";
-$lista_tipos = $conn->query("select * from tipos order by rotulo");
-$rows_tipos = $lista_tipos->fetch_all();
+$lista_tipos = $pdo->query("select * from tipos order by rotulo");
+$rows_tipos = $lista_tipos->fetch(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -40,7 +40,7 @@ $rows_tipos = $lista_tipos->fetch_all();
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <?php foreach ($rows_tipos as $row) { ?>
+                        <?php foreach ($lista_tipos as $row) { ?>
                             <li>
                                 <a href="produtos_por_tipo.php?id_tipo=<?php echo $row[0].'&rotulo='.$row[2]; ?>">
                                 <?php echo $row[2];?>

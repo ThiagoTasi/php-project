@@ -1,7 +1,33 @@
 <?php
 include "acesso_com.php";
-include "../conn/connect.php";
+require "../conn/connect.php";
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $login = $_POST['login'];
+    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+    $nivel = $_POST['nivel'];
+ 
+    //try
+    try {
+        //define a consulta sql para atualizar os dados do usuário com base no id
+        //utiliza parâmetros nomeados para prevenir injeção de sql
+        $sql = "INSERT INTO  usuarios (login,senha,nivel) VALUES(:login,:senha,:nivel)";
+        $stmt = $pdo->prepare($sql);
+        
+        $stmt->bindParam(':login', $login);
+        $stmt->bindParam(':senha', $senha);
+        $stmt->bindParam(':nivel', $nivel);
+        if ($stmt->execute()) {
+            echo "cadastrado com sucesso";
+        } else {
+            echo "Erro ao cadastrar usuário";
+        }
+    } catch (PDOException $e) {
+        echo "Erro:" . $e->getMessage();
+    }
+} else {
+    echo "Metodo de requisição inválido";
+}
 ?>
 <!-- html:5 -->
 <!DOCTYPE html>
@@ -58,10 +84,10 @@ include "../conn/connect.php";
                 <label for="nivel">Nível do usuário</label>
                         <div class="input-group">
                             <label for="nivel_c" class="radio-inline">
-                                <input type="radio" name="nivel_usuario" id="nivel" value="com" checked>Comum
+                                <input type="radio" name="nivel" id="nivel_c" value="com" checked>Comum
                             </label>
                             <label for="nivel_s" class="radio-inline">
-                                <input type="radio" name="nivel_usuario" id="nivel" value="sup">Supervisor
+                                <input type="radio" name="nivel" id="nivel_s" value="sup">Supervisor
                             </label>
                         </div><!-- fecha input-group -->
                         <br>
