@@ -2,7 +2,7 @@
 include "acesso_com.php";
 include "../conn/connect.php";
 
- $lista = $conn->query("select * from usuarios order by login");
+ $lista = $pdo->query("select * from usuarios order by login");
  $row = $lista->fetch(PDO::FETCH_ASSOC);
  $numrow = $lista->rowCount();
 
@@ -69,7 +69,7 @@ include "../conn/connect.php";
                                 </button>
                             </td>
                         </tr>
-                    <?php } while ($row = $lista->fetch_assoc()) ?>
+                    <?php } while ($row = $lista->fetch(PDO::FETCH_ASSOC)) ?>
 
                     <!-- fecha estrutura de repetição -->
                 </tbody>

@@ -5,11 +5,11 @@ include '../conn/connect.php';
 if($_POST){
 $login = $_POST['login'];
 $senha = $_POST['senha'];
-$loginResult = $conn->query("select * from usuarios where login = '$login' and senha = md5('$senha')");
+$loginResult = $pdo->query("select * from usuarios where login = '$login' and senha = md5('$senha')");
 $rowLogin = $loginResult->fetch(PDO::FETCH_ASSOC);
 // var_dump($rowLogin);
 // die();
-$numRow = $loginResult->num_rows;
+$numRow = $loginResult->rowCount();
 if(!isset($_SESSION)){
     $sessaoAntiga = session_name('chulettaaa');
     session_start();
