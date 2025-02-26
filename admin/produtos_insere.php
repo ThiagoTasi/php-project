@@ -12,8 +12,8 @@ if($_POST){
 
     if(isset($_POST['enviar'])){
         // verifica se o btn "enviar" foi acionado
-        $nome_img = $_FILES['imagemfiles']['name'];
-        $tmp_img = $_FILES['imagesfile']['tmp_name'];
+        $nome_img = $_FILES['imagemfile']['name'];
+        $tmp_img = $_FILES['imagemfile']['tmp_name'];
         $rand = rand(100001, 999999);
         $dir_img = "../images/".$rand.$nome_img;
 
@@ -37,7 +37,7 @@ if($_POST){
     try {
         //define a consulta sql para atualizar os dados do usuário com base no id
         //utiliza parâmetros nomeados para prevenir injeção de sql
-        $sql = "INSERT INTO produtos (tipo_id,descricao,resumo,valor,imagem,destaque) VALUES(:id,:descricao,:resumo,:valor,:imagem,:destaque)";
+        $sql = "INSERT INTO produtos (tipo_id,descricao,resumo,valor,imagem,destaque) VALUES(:tipo_id,:descricao,:resumo,:valor,:imagem,:destaque)";
         $stmt = $pdo->prepare($sql);
         
         $stmt->bindParam(':tipo_id', $id);

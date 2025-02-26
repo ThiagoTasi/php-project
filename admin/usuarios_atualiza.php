@@ -12,12 +12,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Atualizando os dados
 
     try {
-    $sql = "UPDATE usuarios set login = :login,:senha=md5,:nivel WHERE id =:id";
-    $stmt = $pdo->prepare($sql);   
+    $sql = "UPDATE usuarios set login = :login,senha=md5(:senha),nivel=:nivel WHERE id =:id";
+    $stmt = $pdo->prepare($sql); 
+    $stmt->bindParam(':id', $id);  
     $stmt->bindParam(':login', $login);
     $stmt->bindParam(':senha', $senha);
     $stmt->bindParam(':nivel', $nivel);
-    $ualt = $update->fetch(PDO::FETCH_ASSOC);
+    //$ualt = $update->fetch(PDO::FETCH_ASSOC);
     if ($stmt->execute()) {
         header('location:usuarios_lista.php');
         echo "cadastrado com sucesso";
@@ -35,16 +36,7 @@ if (isset($_GET['id'])) {
     $user = $pdo->query("select * from usuarios where id =" . $_GET['id']);
     $userrow = $user->fetch(PDO::FETCH_ASSOC);
 }
-
-
     //$update = $conn->query("udpate usuarios set login = '".$login."', senha= md5('".$senha."'), nivel = '".$nivel."'where");
-
-
- 
- 
-
-
-
 ?>
 <!-- html:5 -->
 <!DOCTYPE html>
@@ -102,13 +94,14 @@ if (isset($_GET['id'])) {
 
                 <!-- radio nivel -->
                 <label for="nivel">Nível do usuário</label>
-                        <div class="input-group">
-                            <label for="nivel_c" class="radio-inline">
-                                <input type="radio" name="nivel" id="nivel" value="com"<?php echo $userrow['nivel'] =='com'?"checked":null;?>>Comum
-                            </label>
-                            <label for="nivel_s" class="radio-inline">
-                                <input type="radio" name="nivel" id="nivel" value="sup"<?php echo $userrow['nivel'] =='sup'?"checked":null;?>  >Supervisor
-                            </label>
+                            <div class="input-group">
+                                <label for="nivel_c" class="radio-inline">
+                                    <input type="radio" name="nivel" id="nivel" value="com" <?php echo isset($userrow['nivel']) && $userrow['nivel'] == 'com' ? "checked" : null; ?>>Comum
+                                </label>
+                                <label for="nivel_s" class="radio-inline">
+                                    <input type="radio" name="nivel" id="nivel" value="sup" <?php echo isset($userrow['nivel']) && $userrow['nivel'] == 'sup' ? "checked" : null; ?>>Supervisor
+ 
+                                </label>
                         </div><!-- fecha input-group -->
                         <br>
                         <!-- Fecha radio nivel -->

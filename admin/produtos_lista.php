@@ -63,12 +63,12 @@ $numrow = $lista->rowCount();// quantidade que terei no registro (qunatos ela re
                             <?php 
                             //verifica se o produto está em destaque
                             if($row['destaque']=='Sim'){
-                                echo '<span class="glyphicon glyphicon-star-tets-danger"
+                                echo '<span class="glyphicon glyphicon-star-text-danger"
                                 aria-hidden="true"></span>';
                             }
                             else//caso contrário, exibe o icone de ok - sucess
                             {
-                                '<span class=glyphicon glyphicon-ok text-sucess" aria-hidden="true"></span>';
+                                '<span class="glyphicon glyphicon-ok text-sucess" aria-hidden="true"></span>';
                             }
                             //adicionar espaço
                             echo '&nbsp';

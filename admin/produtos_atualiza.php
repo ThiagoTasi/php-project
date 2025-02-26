@@ -1,47 +1,54 @@
 <?php
 include 'acesso_com.php';
 include '../conn/connect.php';
-if($_POST)
-//Se o usuário clicou no botão atualizar
-{
-if($_FILES['imagemfile']['name']){//se o usuario escolher uma imagem 
-    unlink("../images/".$_POST['imagem_atual']);//apaga a imagem atual
-    $nome_img = $_FILES['imagemfile']['name'];
-    $tmp_img = $_FILES['imagemfile']['tmp_name'];
-    $rand = rand(100001,999999);
-    $dir_img ="../images/".$rand.$nome_img;
-    move_uploaded_file($tnp_img,$dir_img);
-    $nome_img = $rand.$nome_img;
-}else{
-    $nome_img = $_POST['imagem_atual'];
+if ($_POST) { // se o usuário clicou no botão atualizar
+    if ($_FILES['imagemfile']['name']) { // se o escolher uma imagem
+        unlink("../images/" . $_POST['imagem_atual']); // apaga a imagem atual
+        $nome_img = $_FILES['imagemfile']['name'];
+        $tmp_img = $_FILES['imagemfile']['tmp_name']; // imagem temporaria
+        $rand = rand(100001, 999999); // aleatório pega para não dar errado
+        $dir_img = "../images/" . $rand . $nome_img;
+        move_uploaded_file($tmp_img, $dir_img);
+        $nome_img = $rand . $nome_img;
+    } else {
+        $nome_img = $_POST['imagem_atual'];
+    }
+    $id = $_POST['id'];
+    $tipo_id = $_POST['id_tipo'];
+    $destaque = $_POST['destaque'];
+    $descricao = $_POST['descricao'];
+    $resumo = $_POST['resumo'];
+    $valor = $_POST['valor'];
 
+    $sql = ("UPDATE produtos SET
+    tipo_id = :id_tipo,
+    destaque = :destaque,
+    descricao = :descricao,
+    resumo = :resumo,
+    valor = :valor
+     WHERE id = :id");
+    //$ualt = $update ->fetch(PDO::FETCH_ASSOC);
+    try {
+        // Prepara a consulta para execução
+        $stmt = $pdo->prepare($sql);
+        // Associa os parâmetros de forma segura
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id_tipo', $tipo_id);
+        $stmt->bindParam(':destaque', $destaque);
+        $stmt->bindParam(':descricao', $descricao);
+        $stmt->bindParam(':resumo', $resumo);
+        $stmt->bindParam(':valor', $valor);
+
+        if ($stmt->execute()) {
+            echo "  Produto Atualizado com sucesso!";
+            header('location: produtos_lista.php');
+        } else {
+            echo "Erro ao atualizar produto.";
+        }
+    } catch (PDOException $e) {
+        echo "Erro: " . $e->getMessage();
+    }
 }
-$id_tipo = $_POST['id_tipo'];
-$destaque = $_POST['destaque'];
-$descricao = $_POST['descricao'];
-$resumo = $_POST['resumo'];
-$valor = $_POST['valor'];
-
-$id = $_POST['id'];
-
-$update = "update produtos
-set tipo_id = $id_tipo,
-destaque = '$destaque',
-descricao = '$descricao',
-resumo = '$resumo',
-valor = $valor,
-imagem = '$nome_img'
-where id = $id
-";
-$result = $pdo->query($update);
-if($result)
-header('location:produtos_lista.php');
- 
- 
- 
-}
-
-
 
 // carrega produto GET ['id']
 if ($_GET) {
@@ -49,19 +56,17 @@ if ($_GET) {
 } else {
     $id_form = 0;
 }
-$lista = "SELECT * FROM produtos WHERE id=:id";
-$stmt = $pdo->prepare($sql);
-$stmt->bindParam(':id', $id_form);
-
-
+$lista = $pdo->query("select * from produtos where id = $id_form");
+$row = $lista->fetch(PDO::FETCH_ASSOC);
+//var_dump($id_form);
+//die();
 
 
 // selecionar a lista de tipos para preencher o <select>
-$lista_Tipo = $pdo->query("select * from produtos where id = " . $id_form);
-
-
-
+$listaTipo = $pdo->query("select * from tipos order by rotulo");
+$rowTipo = $listaTipo->fetch(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -116,12 +121,12 @@ $lista_Tipo = $pdo->query("select * from produtos where id = " . $id_form);
                             <label for="destaque">Destaque:</label>
                             <div class="input-group">
                                 <label for="destaque_s" class="radio-inline">
-                                    <input type="radio" name="destaque" id="destaque" value="Sim">Sim
-                                    <?php echo $row['destaque']== 'Sim'?"checked":null; ?>
+                                    <input type="radio" name="destaque" id="destaque" value="Sim"
+                                    <?php echo $row['destaque'] == 'Sim' ? "checked" : null; ?>>Sim
                                 </label>
                                 <label for="destaque_n" class="radio-inline">
-                                    <input type="radio" name="destaque" id="destaque" value="Não">Não
-                                    <?php echo $row['destaque']== 'Não'?"checked":null; ?>
+                                    <input type="radio" name="destaque" id="destaque" value="Não"
+                                    <?php echo $row['destaque'] == 'Não' ? "checked" : null; ?>>Não
                                 </label>
                             </div>
                             <label for="descricao">Descrição:</label>
@@ -131,7 +136,7 @@ $lista_Tipo = $pdo->query("select * from produtos where id = " . $id_form);
                                 </span>
                                 <input type="text" name="descricao" id="descricao"
                                     class="form-control" placeholder="Digite a descrição do Produto"
-                                    maxlength="100" value="<?php echo $row['descricao']?>">
+                                    maxlength="100" value="<?php echo $row['descricao'] ?>">
                             </div>
 
                             <label for="resumo">Resumo:</label>
@@ -142,7 +147,7 @@ $lista_Tipo = $pdo->query("select * from produtos where id = " . $id_form);
                                 <textarea name="resumo" id="resumo"
                                     cols="30" rows="8"
                                     class="form-control" placeholder="Digite os detalhes do Produto">
-                                    <?php echo $row['resumo']?>
+                                    <?php echo $row['resumo'] ?>
 
                             </textarea>
                             </div>
@@ -153,12 +158,12 @@ $lista_Tipo = $pdo->query("select * from produtos where id = " . $id_form);
                                     <span class="glyphicon glyphicon-tags" aria-hidden="true"></span>
                                 </span>
                                 <input type="number" name="valor" id="valor"
-                                    class="form-control" required min="0" step="0.01" value="<?php echo $row['valor']?>">
+                                    class="form-control" required min="0" step="0.01" value="<?php echo $row['valor'] ?>">
                             </div>
 
                             <label for="imagem_atual">Imagem Atual:</label>
-                            <img src="../images/"<?php echo $row['imagem']?>alt="" srcset="">
-                            <input type="hidden" name="imagem_atual" id="imagem_atual" value="<?php echo $row['imagem']?>">
+                            <img src="../images/" <?php echo $row['imagem'] ?>alt="" srcset="">
+                            <input type="hidden" name="imagem_atual" id="imagem_atual" value="<?php echo $row['imagem'] ?>">
 
                             <label for="imagem">Imagem Nova:</label>
                             <div class="input-group">
