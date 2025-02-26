@@ -5,6 +5,7 @@
             <li data-target="#banners" data-slide-to="0" class="active"></li>
             <li data-target="#banners" data-slide-to="1"></li>
             <li data-target="#banners" data-slide-to="2"></li>
+            <li data-target="#banners" data-slide-to="3"></li>
         </ol>
         <div class="carousel-inner" role="listbox">
             <div class="item active">
@@ -15,6 +16,9 @@
             </div>
             <div class="item ">
                 <img src="images/banner_3.jpg" alt="" class="center-block">
+            </div>
+            <div class="item ">
+                <img src="images/banner_4.jpg" alt="" class="center-block">
             </div>
         </div>
         <a href="#banners" class="left carousel-control" role="button" data-slide="prev">
