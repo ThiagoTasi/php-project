@@ -1,8 +1,8 @@
 <?php
 include "acesso_com.php";
 include "../conn/connect.php";
- 
- 
+
+
 $lista = $pdo->query("select * from tipos order by rotulo");
 $row = $lista->fetch(PDO::FETCH_ASSOC);
 $numrow = $lista->rowCount();
@@ -36,32 +36,37 @@ $numrow = $lista->rowCount();
                         <span class="hidden-xs">ADICIONAR <br></span>
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     </a>
-                   
+                    
                 </th>
             </tr>
         </thead>
         <tbody>
-        <?php do{ ?>
-            <tr>
-                <td class="hidden"><?php echo $row['id'];?></td>
-                <td><?php echo $row['rotulo'];?></td>
-                <td><?php echo $row['sigla'];?></td>
-                <td><a href="tipos_atualiza.php" class="btn btn-warning btn-sm">
-                        <span class="glyphicon glyphicon-refresh" aria-hidden="true">ALTERAR</span>
-                    </a>
-                    <button data-nome="<?php echo $row['sigla']?>" data-id="<?php echo $row['id']?>" class="delete btn btn-danger btn-sm">
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true">EXCLUIR </span>
-                    </button>
-                </td>
-            </tr>
-           <?php }while($row = $lista->fetch(PDO::FETCH_ASSOC));?>
+        <?php do { ?>
+    <tr>
+        <td class="hidden"><?php echo $row['id']; ?></td>
+        <td><?php echo $row['rotulo']; ?></td>
+        <td><?php echo $row['sigla']; ?></td>
+        <td class="text-center">
+          
+            <a href="tipos_atualiza.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-xs">
+                <span class="glyphicon glyphicon-refresh"></span>
+                <span class="hidden-xs">ALTERAR</span>    
+            </a>
+
+            <button data-nome="<?php echo $row['sigla']; ?>" data-id="<?php echo $row['id']; ?>" class="delete btn btn-danger btn-xs">
+                <span class="glyphicon glyphicon-trash"></span>
+                <span class="hidden-xs">EXCLUIR</span>
+            </button>
+        </td>
+    </tr>
+<?php } while ($row = $lista->fetch(PDO::FETCH_ASSOC)); ?>
             <!-- fecha estrutura de repetição -->
         </tbody>
- 
+
     </table>
     </div><!-- fecha dimensionamento -->
 </main>
- 
+
 <!-- Modal -->
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -87,11 +92,11 @@ $numrow = $lista->rowCount();
         </div><!-- fecha modal-content -->
     </div><!-- Fecha modal-dialog -->
 </div><!-- Fecha Modal -->
-   
+    
 <!-- Link arquivos Bootstrap js -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
- 
+
 <!-- Script para o Modal -->
 <script type="text/javascript">
     $('.delete').on('click',function(){
@@ -106,7 +111,6 @@ $numrow = $lista->rowCount();
         $('#myModal').modal('show'); // Modal abre
     });
 </script>
- 
+
 </body>
 </html>
- 
