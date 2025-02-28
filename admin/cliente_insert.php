@@ -2,7 +2,7 @@
 include '../conn/connect.php';
 // inicia a verificação do Login
 
-if ($_SERVER["REQUEST_METHOD"] = "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $senha =md5( $_POST['senha']);
@@ -23,24 +23,24 @@ if ($_SERVER["REQUEST_METHOD"] = "POST") {
         echo "Erro:" . $e->getMessage();
     }
 }
-// if ($_SERVER["REQUEST_METHOD"] == "POST") {
-//     $login = $_POST['login'];
-//     $senha = md5($_POST['senha']);
-//     $nivel = $_POST['nivel'];
-//     try {
-//         $sql = "INSERT INTO usuarios (login, senha,nivel) VALUES (:login,:senha,:nivel)";
-//         $stmt = $pdo->prepare($sql);
-//         $stmt -> bindParam(':login', $login);
-//         $stmt -> bindParam(':senha', $senha);
-//         $stmt -> bindParam(':nivel', $nivel);
-//         if ($stmt->execute()) {
-//         } else {
-//             echo "Erro ao cadastrar usuario";
-//         }
-//     } catch (PDOException $e) {
-//         echo "Erro:" . $e->getMessage();
-//     }
-// }
+ if ($_SERVER["REQUEST_METHOD"] == "POST") {
+     $login = $_POST['login'];
+     $senha = md5($_POST['senha']);
+     $nivel = $_POST['nivel'];
+     try {
+         $sql = "INSERT INTO usuarios (login, senha,nivel) VALUES (:login,:senha,:nivel)";
+         $stmt = $pdo->prepare($sql);
+         $stmt -> bindParam(':login', $login);
+         $stmt -> bindParam(':senha', $senha);
+         $stmt -> bindParam(':nivel', $nivel);
+         if ($stmt->execute()) {
+         } else {
+             echo "Erro ao cadastrar usuario";
+         }
+     } catch (PDOException $e) {
+         echo "Erro:" . $e->getMessage();
+     }
+ }
 
 ?>
 <!DOCTYPE html>
