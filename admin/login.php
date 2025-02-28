@@ -1,32 +1,30 @@
-<?php 
+<?php
 include '../conn/connect.php';
 // inicia a verificação do Login
 
-if($_POST){
-$login = $_POST['login'];
-$senha = $_POST['senha'];
-$loginResult = $pdo->query("select * from usuarios where login = '$login' and senha = md5('$senha')");
-$rowLogin = $loginResult->fetch(PDO::FETCH_ASSOC);
-// var_dump($rowLogin);
-// die();
-$numRow = $loginResult->rowCount();
-if(!isset($_SESSION)){
-    $sessaoAntiga = session_name('chulettaaa');
-    session_start();
-    $session_name_new = session_name();
-}
-if($numRow > 0){
-    $_SESSION['login_usuario'] = $login;
-    $_SESSION['nivel_usuario'] = $rowLogin['nivel'];
-    $_SESSION['nome_da_sessao'] = session_name();
-    if ($rowLogin['nivel'] == 'sup'){
-        echo "<script>window.open('index.php','_self')</script>";
-    }else{
-        echo "<script>window.open('../cliente/index.php?cliente=".$login."','_self')</script>";
+if ($_POST) {
+    $login = $_POST['login'];
+    $senha = $_POST['senha'];
+    $loginResult = $pdo->query("select * from usuarios where login = '$login' and senha = md5('$senha')");
+    $rowLogin = $loginResult->fetch(PDO::FETCH_ASSOC);
+    // var_dump($rowLogin);
+    // die();
+    $numRow = $loginResult->rowCount();
+    if (!isset($_SESSION)) {
+        $sessaoAntiga = session_name('chulettaaa');
+        session_start();
+        $session_name_new = session_name();
     }
-}
-
-
+    if ($numRow > 0) {
+        $_SESSION['login_usuario'] = $login;
+        $_SESSION['nivel_usuario'] = $rowLogin['nivel'];
+        $_SESSION['nome_da_sessao'] = session_name();
+        if ($rowLogin['nivel'] == 'sup') {
+            echo "<script>window.open('index.php','_self')</script>";
+        } else {
+            echo "<script>window.open('../cliente/index.php?cliente=" . $login . "','_self')</script>";
+        }
+    }
 }
 
 ?>
@@ -41,7 +39,7 @@ if($numRow > 0){
     <script src="https://kit.fontawesome.com/2495680ceb.js" crossorigin="anonymous"></script>
     <!-- Link para CSS específico -->
     <link rel="stylesheet" href="../css/estilo.css" type="text/css">
-    
+
     <title>Chuleta Quente - Login</title>
 </head>
 
@@ -75,6 +73,9 @@ if($numRow > 0){
                                     </p>
                                     <p class="text-right">
                                         <input type="submit" value="Entrar" class="btn btn-primary">
+                                    </p>
+                                    <p class="text-right">
+                                        <button type="button" class="btn btn-primary" onclick="window.location.href='cliente_insert.php'">Cadastrar</button>
                                     </p>
                                 </form>
                                 <p class="text-center">
