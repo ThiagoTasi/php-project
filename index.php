@@ -25,6 +25,22 @@
         <!-- Area geral de produtos -->
         <a class="pt-6" name="produtos">&nbsp;</a>
         <?php include 'produtos_geral.php'; ?>
+        <!--area de destaque-->
+        <section class="container text-center bg-info text-white p-4">
+            <h2>Reserve sua Mesa e Ganhe Descontos Exclusivos!</h2>
+            <p>Faça sua reserva para 5 pessoas ou mais e aproveite:</p>
+            <ul>
+                <li><strong>70% de desconto</strong> no rodízio do titular da reserva.</li>
+                <li><strong>10% de desconto</strong> em todas as bebidas da mesa.</li>
+            </ul>
+            <?php
+            if('login_reserva.php') {
+                echo '<a href="admin/login_reserva.php" class="btn btn-warning btn-lg">Faça sua Reserva Agora!</a>';
+            } else {
+                echo '<p class="text-danger">Arquivo admin/login_reserva.php não encontrado!</p>';
+            }
+            ?>
+        </section>
         <!-- rodapé -->
         <footer class="panel-footer" style="background:none;">
             <?php include 'rodape.php'; ?>

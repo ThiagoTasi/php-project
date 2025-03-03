@@ -2,7 +2,7 @@
 session_name("chuletaaaa");
 session_start();
 session_destroy();
-header('Locations: ../index.php');
+header('Location: ../index.php');
 exit;
 
 ?>

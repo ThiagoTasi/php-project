@@ -1,5 +1,32 @@
 <?php
 include "acesso_com.php";
+include '../conn/connect.php';
+// inicia a verificação do Login
+
+if ($_POST) {
+    $login = $_POST['login'];
+    $senha = $_POST['senha'];
+    $loginResult = $pdo->query("select * from usuarios where login = '$login' and senha = md5('$senha')");
+    $rowLogin = $loginResult->fetch(PDO::FETCH_ASSOC);
+    // var_dump($rowLogin);
+    // die();
+    $numRow = $loginResult->rowCount();
+    if (!isset($_SESSION)) {
+        $sessaoAntiga = session_name('chulettaaa');
+        session_start();
+        $session_name_new = session_name();
+    }
+    if ($numRow > 0) {
+        $_SESSION['login_usuario'] = $login;
+        $_SESSION['nivel_usuario'] = $rowLogin['nivel'];
+        $_SESSION['nome_da_sessao'] = session_name();
+        if ($rowLogin['nivel'] == 'sup') {
+            echo "<script>window.open('index.php','_self')</script>";
+        } else {
+            echo "<script>window.open('../cliente/index.php?cliente=" . $login . "','_self')</script>";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
