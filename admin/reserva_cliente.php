@@ -1,13 +1,7 @@
 <?php
-die("teste"); // Adicione esta linha no topo do arquivo
+// Adicione esta linha no topo do arquivo
 include '../conn/connect.php';
 
-session_start();
-
-if (!isset($_SESSION['login_usuario'])) {
-    header("Location: login.php");
-    exit();
-}
 
 ?>
 <!DOCTYPE html>
@@ -35,35 +29,98 @@ if (!isset($_SESSION['login_usuario'])) {
                             </p>
                             <br>
                             <div class="alert alert-info" role="alert">
-                                <form action="cliente_insert.php" name="form_cadastro" id="form_cadastro" method="POST" enctype="multipart/form-data">
+                                <form action="reserva_cliente.php" name="form_cadastro" id="form_cadastro" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="acao" value="reserva">
-                                    <label for="nome">Nome:</label>
+
+                                    <!-- cliente_id (campo oculto ou atribuído automaticamente, se necessário) -->
+                                    <input type="hidden" name="cliente_id" id="cliente_id" value="ID_DO_CLIENTE">
+
+                                    <!-- Data da reserva -->
+                                    <label for="data_reserva">Data da Reserva:</label>
+                                    <p class="input-group">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar text-info" aria-hidden="true"></span>
+                                        </span>
+                                        <input type="date" name="data_reserva" id="data_reserva" class="form-control" required>
+                                    </p>
+
+                                    <!-- Horário -->
+                                    <label for="horario">Horário:</label>
+                                    <p class="input-group">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-time text-info" aria-hidden="true"></span>
+                                        </span>
+                                        <input type="time" name="horario" id="horario" class="form-control" required>
+                                    </p>
+
+                                    <!-- Número de pessoas -->
+                                    <label for="num_pessoas">Número de Pessoas:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-user text-info" aria-hidden="true"></span>
                                         </span>
-                                        <input type="text" name="nome" id="nome" class="form-control" autofocus required autocomplete="off" placeholder="Digite seu nome">
+                                        <input type="number" name="num_pessoas" id="num_pessoas" class="form-control" required min="1" max="100" placeholder="Digite o número de pessoas">
                                     </p>
-                                    <label for="cpf">CPF:</label>
+
+                                    <!-- Motivo da reserva -->
+                                    <label for="motivo">Motivo da Reserva:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-id-card text-info glyphicon glyphicon-credit-card" aria-hidden="true"></span>
+                                            <span class="glyphicon glyphicon-comment text-info" aria-hidden="true"></span>
                                         </span>
-                                        <input type="text" name="cpf" id="cpf" class="form-control" required autocomplete="off" placeholder="Digite seu CPF">
+                                        <input type="text" name="motivo" id="motivo" class="form-control" maxlength="100" placeholder="Digite o motivo da reserva">
                                     </p>
-                                    <label for="email">Email:</label>
+
+                                    <!-- Status da reserva -->
+                                    <label for="status">Status da Reserva:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>
+                                            <span class="glyphicon glyphicon-check text-info" aria-hidden="true"></span>
                                         </span>
-                                        <input type="email" name="email" id="email" class="form-control" required autocomplete="off" placeholder="Digite seu email">
+                                        <select name="status" id="status" class="form-control" required>
+                                            <option value="pendente">Pendente</option>
+                                            <option value="confirmado">Confirmado</option>
+                                            <option value="negado">Negado</option>
+                                            <option value="cancelado">Cancelado</option>
+                                            <option value="expirado">Expirado</option>
+                                        </select>
                                     </p>
+
+                                    <!-- Número da mesa -->
+                                    <label for="numero_mesa">Número da Mesa:</label>
+                                    <p class="input-group">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-th text-info" aria-hidden="true"></span>
+                                        </span>
+                                        <input type="number" name="numero_mesa" id="numero_mesa" class="form-control" required placeholder="Digite o número da mesa">
+                                    </p>
+
+                                    <!-- Motivo da negativa (apenas se o status for 'negado', pode ser preenchido depois) -->
+                                    <label for="motivo_negativa">Motivo da Negativa:</label>
+                                    <p class="input-group">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-exclamation-sign text-info" aria-hidden="true"></span>
+                                        </span>
+                                        <input type="text" name="motivo_negativa" id="motivo_negativa" class="form-control" placeholder="Digite o motivo da negativa (se aplicável)">
+                                    </p>
+
+                                    <!-- Código de reserva (gerado automaticamente pelo sistema) -->
+                                    <label for="codigo_reserva">Código da Reserva:</label>
+                                    <p class="input-group">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-barcode text-info" aria-hidden="true"></span>
+                                        </span>
+                                        <input type="text" name="codigo_reserva" id="codigo_reserva" class="form-control" required readonly placeholder="Código gerado automaticamente">
+                                    </p>
+
+                                    <!-- Botões para reservar ou cancelar -->
                                     <p class="text-right">
-                                        <input type="submit" value="Reservar" class="btn btn-primary">
+                                        <button type="submit" value="Reservar" class="btn btn-primary">Reservar</button>
+                                        </p>
                                     </p>
                                     <br>
                                     <p class="text-right">
-                                        <button type="button" class="btn btn-primary" onclick="window.location.href='reserva_cliente.php'"></button>
+                                        <button type="button" class="btn btn-primary" onclick="window.location.href='reserva_cliente.php'">Cancelar</button>
                                     </p>
                                 </form>
                             </div>
@@ -73,9 +130,16 @@ if (!isset($_SESSION['login_usuario'])) {
             </article>
         </section>
     </main>
+</body>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
+</html>
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
 </body>
 
 </html>

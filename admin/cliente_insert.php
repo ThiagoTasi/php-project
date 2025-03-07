@@ -7,19 +7,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $senha = $_POST['senha']; // Senha original do cliente
 
-    $login = $_POST['login']; // Obtém o login do formulário
+    
     $nivel = $_POST['nivel'];
 
     try {
+        // Inicia a transação
+        $pdo->beginTransaction();
+
         // Cadastro do usuário
-        $sqlUsuario = "INSERT INTO usuarios (login, senha, nivel) VALUES (:login, :senha, :nivel)";
+        $sqlUsuario = "INSERT INTO usuarios (senha, nivel) VALUES (:senha, :nivel)";
         $stmtUsuario = $pdo->prepare($sqlUsuario);
-        $stmtUsuario->bindParam(':login', $login);
 
         // Armazena o hash da senha em uma variável
         $senhaHashUsuario = password_hash($senha, PASSWORD_DEFAULT);
         $stmtUsuario->bindParam(':senha', $senhaHashUsuario);
-
         $stmtUsuario->bindParam(':nivel', $nivel);
 
         if ($stmtUsuario->execute()) {
@@ -38,14 +39,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmtCliente->bindParam(':senha', $senhaHashCliente);
 
             if ($stmtCliente->execute()) {
+                // Se tudo ocorreu bem, confirma a transação
+                $pdo->commit();
                 echo "Cliente cadastrado com sucesso!";
             } else {
+                // Se ocorrer algum erro, desfaz a transação
+                $pdo->rollBack();
                 echo "Erro ao cadastrar cliente.";
             }
         } else {
+            // Se ocorrer algum erro na inserção do usuário, desfaz a transação
+            $pdo->rollBack();
             echo "Erro ao cadastrar usuário.";
         }
     } catch (PDOException $e) {
+        // Em caso de erro, desfaz a transação
+        $pdo->rollBack();
         echo "Erro: " . $e->getMessage();
     }
 }
@@ -53,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
+ 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="30;URL=../index.php">
@@ -63,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="../css/estilo.css" type="text/css">
     <title>Chuleta Quente - Cadastro</title>
 </head>
-
+ 
 <body>
     <main class="container">
         <section>
@@ -79,13 +88,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="alert alert-info" role="alert">
                                 <form action="cliente_insert.php" name="form_cadastro" id="form_cadastro" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="nivel" id="nivel" value="com">
-                                    <label for="login">Login:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-user text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <input type="text" name="login" id="login" class="form-control" required autocomplete="off" placeholder="Digite seu login">
-                                    </p>
                                     <label for="nome">Nome:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
@@ -138,5 +140,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
 </body>
-
+ 
 </html>

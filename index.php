@@ -27,7 +27,7 @@ session_start(); // Inicie a sessão no topo do arquivo
             <ul>
                 <li><strong>70% de desconto</strong> no rodízio do titular da reserva.</li>
                 <li><strong>10% de desconto</strong> em todas as bebidas da mesa.</li>
-            </ul>
+            </ul>   
             <?php
             if (isset($_SESSION['login_usuario'])) { // Verifica se o usuário está logado
                 if (file_exists('admin/reserva_cliente.php')) { // Verifica se o arquivo existe
@@ -36,7 +36,7 @@ session_start(); // Inicie a sessão no topo do arquivo
                     echo '<p class="text-danger">Arquivo admin/reserva_cliente.php não encontrado!</p>';
                 }
             } else {
-                echo '<a href="admin/login.php" class="btn btn-warning btn-lg">Faça Login para Reservar!</a>';
+                  echo '<a href="admin/reserva_cliente.php" class="btn btn-warning btn-lg">Faça Login para Reservar!</a>';
             }
             ?>
         </section>
