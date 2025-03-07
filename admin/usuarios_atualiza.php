@@ -5,38 +5,37 @@ include "acesso_com.php";
 // Incluir o arquivo e fazer a conexão
 include "../conn/connect.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   $login = $_POST['login'];
+    $login = $_POST['login'];
     $senha = $_POST['senha'];
     $nivel = $_POST['nivel'];
     $id = $_POST['id'];
-// Atualizando os dados
+    // Atualizando os dados
 
     try {
-    $sql = "UPDATE usuarios set login = :login,senha=md5(:senha),nivel=:nivel WHERE id =:id";
-    $stmt = $pdo->prepare($sql); 
-    $stmt->bindParam(':id', $id);  
-    $stmt->bindParam(':login', $login);
-    $stmt->bindParam(':senha', $senha);
-    $stmt->bindParam(':nivel', $nivel);
-    //$ualt = $update->fetch(PDO::FETCH_ASSOC);
-    if ($stmt->execute()) {
-        header('location:usuarios_lista.php');
-        echo "cadastrado com sucesso";
-        exit();
-    } else {
-        echo "Erro ao cadastrar usuário";
+        $sql = "UPDATE usuarios set login = :login,senha=md5(:senha),nivel=:nivel WHERE id =:id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':login', $login);
+        $stmt->bindParam(':senha', $senha);
+        $stmt->bindParam(':nivel', $nivel);
+        if ($stmt->execute()) {
+            session_start();
+            $_SESSION['atualizacao_sucesso'] = true; // Define a variável de sessão
+            header('location:usuarios_lista.php');
+            exit();
+        } else {
+            echo "Erro ao atualizar usuário";
+        }
+    } catch (PDOException $e) {
+        echo "Erro:" . $e->getMessage();
     }
-} catch (PDOException $e) {
-    echo "Erro:" . $e->getMessage();
-}
 } else {
-echo "Metodo de requisição inválido";
+    echo "Metodo de requisição inválido";
 }
 if (isset($_GET['id'])) {
     $user = $pdo->query("select * from usuarios where id =" . $_GET['id']);
     $userrow = $user->fetch(PDO::FETCH_ASSOC);
 }
-    //$update = $conn->query("udpate usuarios set login = '".$login."', senha= md5('".$senha."'), nivel = '".$nivel."'where");
 ?>
 <!-- html:5 -->
 <!DOCTYPE html>
