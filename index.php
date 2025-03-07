@@ -1,5 +1,5 @@
 <?php
-
+session_start(); // Inicie a sessão no topo do arquivo
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -13,19 +13,14 @@
 </head>
 
 <body class="fundofixo">
-    <!-- Area de menu -->
     <?php include 'menu_publico.php'; ?>
     <a name="home">&</a>
     <main class="container">
-        <!-- Area de carousel -->
         <?php include 'carousel.php'; ?>
-        <!-- Area de destaque -->
         <a class="pt-6" name="destaques">&nbsp;</a>
         <?php include 'produtos_destaque.php'; ?>
-        <!-- Area geral de produtos -->
         <a class="pt-6" name="produtos">&nbsp;</a>
         <?php include 'produtos_geral.php'; ?>
-        <!--area de destaque-->
         <section class="container text-center bg-info text-white p-4">
             <h2>Reserve sua Mesa e Ganhe Descontos Exclusivos!</h2>
             <p>Faça sua reserva para 5 pessoas ou mais e aproveite:</p>
@@ -34,14 +29,17 @@
                 <li><strong>10% de desconto</strong> em todas as bebidas da mesa.</li>
             </ul>
             <?php
-            if('login_reserva.php') {
-                echo '<a href="admin/login_reserva.php" class="btn btn-warning btn-lg">Faça sua Reserva Agora!</a>';
+            if (isset($_SESSION['login_usuario'])) { // Verifica se o usuário está logado
+                if (file_exists('admin/reserva_cliente.php')) { // Verifica se o arquivo existe
+                    echo '<a href="admin/reserva_cliente.php" class="btn btn-warning btn-lg">Faça sua Reserva Agora!</a>';
+                } else {
+                    echo '<p class="text-danger">Arquivo admin/reserva_cliente.php não encontrado!</p>';
+                }
             } else {
-                echo '<p class="text-danger">Arquivo admin/login_reserva.php não encontrado!</p>';
+                echo '<a href="admin/login.php" class="btn btn-warning btn-lg">Faça Login para Reservar!</a>';
             }
             ?>
         </section>
-        <!-- rodapé -->
         <footer class="panel-footer" style="background:none;">
             <?php include 'rodape.php'; ?>
             <a name="contato"></a>

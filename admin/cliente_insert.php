@@ -1,51 +1,59 @@
 <?php
 include '../conn/connect.php';
-// inicia a verificação do Login
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $senha =md5( $_POST['senha']);
     $cpf = $_POST['cpf'];
-    try {
-        $sql = "INSERT INTO cliente (nome, email, senha, cpf) VALUES (:nome,:email,:senha,:cpf)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':nome', $nome);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':cpf', $cpf);
-        $stmt->bindParam(':senha', $senha);
+    $email = $_POST['email'];
+    $senha = $_POST['senha']; // Senha original do cliente
 
-        if ($stmt->execute()) {
+    $login = $_POST['login']; // Obtém o login do formulário
+    $nivel = $_POST['nivel'];
+
+    try {
+        // Cadastro do usuário
+        $sqlUsuario = "INSERT INTO usuarios (login, senha, nivel) VALUES (:login, :senha, :nivel)";
+        $stmtUsuario = $pdo->prepare($sqlUsuario);
+        $stmtUsuario->bindParam(':login', $login);
+
+        // Armazena o hash da senha em uma variável
+        $senhaHashUsuario = password_hash($senha, PASSWORD_DEFAULT);
+        $stmtUsuario->bindParam(':senha', $senhaHashUsuario);
+
+        $stmtUsuario->bindParam(':nivel', $nivel);
+
+        if ($stmtUsuario->execute()) {
+            $idUsuario = $pdo->lastInsertId(); // Obtém o ID do usuário gerado
+
+            // Cadastro do cliente
+            $sqlCliente = "INSERT INTO cliente (nome, cpf, email, idusuario, senha) VALUES (:nome, :cpf, :email, :idusuario, :senha)";
+            $stmtCliente = $pdo->prepare($sqlCliente);
+            $stmtCliente->bindParam(':nome', $nome);
+            $stmtCliente->bindParam(':cpf', $cpf);
+            $stmtCliente->bindParam(':email', $email);
+            $stmtCliente->bindParam(':idusuario', $idUsuario); // Insere o idusuario
+
+            // Armazena o hash da senha do cliente em uma variável
+            $senhaHashCliente = password_hash($senha, PASSWORD_DEFAULT);
+            $stmtCliente->bindParam(':senha', $senhaHashCliente);
+
+            if ($stmtCliente->execute()) {
+                echo "Cliente cadastrado com sucesso!";
+            } else {
+                echo "Erro ao cadastrar cliente.";
+            }
         } else {
-            echo "Erro ao cadastrar usuario";
+            echo "Erro ao cadastrar usuário.";
         }
     } catch (PDOException $e) {
-        echo "Erro:" . $e->getMessage();
+        echo "Erro: " . $e->getMessage();
     }
 }
- if ($_SERVER["REQUEST_METHOD"] == "POST") {
-     $login = $_POST['login'];
-     $senha = md5($_POST['senha']);
-     $nivel = $_POST['nivel'];
-     try {
-         $sql = "INSERT INTO usuarios (login, senha,nivel) VALUES (:login,:senha,:nivel)";
-         $stmt = $pdo->prepare($sql);
-         $stmt -> bindParam(':login', $login);
-         $stmt -> bindParam(':senha', $senha);
-         $stmt -> bindParam(':nivel', $nivel);
-         if ($stmt->execute()) {
-         } else {
-             echo "Erro ao cadastrar usuario";
-         }
-     } catch (PDOException $e) {
-         echo "Erro:" . $e->getMessage();
-     }
- }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
- 
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="30;URL=../index.php">
@@ -55,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="../css/estilo.css" type="text/css">
     <title>Chuleta Quente - Cadastro</title>
 </head>
- 
+
 <body>
     <main class="container">
         <section>
@@ -68,10 +76,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <i class="fas fa-user-plus fa-10x"></i>
                             </p>
                             <br>
- 
                             <div class="alert alert-info" role="alert">
                                 <form action="cliente_insert.php" name="form_cadastro" id="form_cadastro" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="nivel" id="nivel" value="com">
+                                    <label for="login">Login:</label>
+                                    <p class="input-group">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-user text-info" aria-hidden="true"></span>
+                                        </span>
+                                        <input type="text" name="login" id="login" class="form-control" required autocomplete="off" placeholder="Digite seu login">
+                                    </p>
                                     <label for="nome">Nome:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
@@ -79,7 +93,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </span>
                                         <input type="text" name="nome" id="nome" class="form-control" autofocus required autocomplete="off" placeholder="Digite seu nome">
                                     </p>
- 
                                     <label for="cpf">CPF:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
@@ -87,7 +100,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </span>
                                         <input type="text" name="cpf" id="cpf" class="form-control" required autocomplete="off" placeholder="Digite seu CPF">
                                     </p>
- 
                                     <label for="email">Email:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
@@ -95,7 +107,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </span>
                                         <input type="email" name="email" id="email" class="form-control" required autocomplete="off" placeholder="Digite seu email">
                                     </p>
- 
                                     <label for="senha">Senha:</label>
                                     <p class="input-group">
                                         <span class="input-group-addon">
@@ -103,7 +114,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </span>
                                         <input type="password" name="senha" id="senha" class="form-control" required autocomplete="off" placeholder="Digite sua senha">
                                     </p>
- 
                                     <p class="text-right">
                                         <input type="submit" value="Cadastrar" class="btn btn-primary">
                                     </p>
@@ -125,10 +135,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </article>
         </section>
     </main>
- 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
 </body>
- 
+
 </html>
- >

@@ -111,6 +111,31 @@
 </div><!-- fecha col -->
 <!-- fecha ADM USUÁRIOS -->
 
+<!-- ADM RESERVAS -->
+<div class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+        <div class="alert alert-success" role="alert">
+
+            <div class="btn-group btn-group-justified" role="group">
+                <div class="btn-group">
+                    <button class="btn btn-success">
+                        RESERVA
+                    </button>
+                </div></div><div class="btn-group btn-group-justified" role="group">
+                <div class="btn-group">
+                    <a href="reserva_lista.php">
+                        <button class="btn btn-success">
+                            LISTAR
+                        </button>
+                    </a>
+                </div><div class="btn-group">
+                    <a href="reserva_insere.php">
+                        <button class="btn btn-success">
+                            INSERIR
+                        </button>
+                    </a>
+                </div>
+
 
 </div><!-- fecha row -->
 

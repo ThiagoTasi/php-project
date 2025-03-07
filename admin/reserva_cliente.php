@@ -1,4 +1,5 @@
 <?php
+die("teste"); // Adicione esta linha no topo do arquivo
 include '../conn/connect.php';
 
 session_start();
@@ -8,46 +9,6 @@ if (!isset($_SESSION['login_usuario'])) {
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['acao']) && $_POST['acao'] == 'reserva') {
-        $nome = $_POST['nome'];
-        $cpf = $_POST['cpf'];
-        $email = $_POST['email'];
-        try {
-            $sql = "INSERT INTO reserva (nome,cpf,email) VALUES (:nome,:cpf,:email)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':nome', $nome);
-            $stmt->bindParam(':cpf', $cpf);
-            $stmt->bindParam(':email', $email);
-
-            if ($stmt->execute()) {
-                echo "<script>alert('Reserva feita com sucesso.');</script>";
-            } else {
-                echo "<script>alert('Erro ao fazer a reserva.');</script>";
-            }
-        } catch (PDOException $e) {
-            echo "<script>alert('Erro: " . $e->getMessage() . "');</script>";
-        }
-    } elseif (isset($_POST['acao']) && $_POST['acao'] == 'usuario') {
-        $login = $_POST['login'];
-        $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-        $nivel = $_POST['nivel'];
-        try {
-            $sql = "INSERT INTO usuarios (login, senha,nivel) VALUES (:login,:senha,:nivel)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':login', $login);
-            $stmt->bindParam(':senha', $senha);
-            $stmt->bindParam(':nivel', $nivel);
-            if ($stmt->execute()) {
-                echo "<script>alert('Usuário cadastrado com sucesso.');</script>";
-            } else {
-                echo "<script>alert('Erro ao cadastrar usuário.');</script>";
-            }
-        } catch (PDOException $e) {
-            echo "<script>alert('Erro: " . $e->getMessage() . "');</script>";
-        }
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -102,38 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </p>
                                     <br>
                                     <p class="text-right">
-                                        <button type="button" class="btn btn-primary" onclick="window.location.href='login_reserva.php'">Voltar ao Login</button>
-                                    </p>
-                                </form>
-                                <form action="cliente_insert.php" name="form_usuario" id="form_usuario" method="POST" enctype="multipart/form-data">
-                                    <input type="hidden" name="acao" value="usuario">
-                                    <label for="login">Login:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-user text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <input type="text" name="login" id="login" class="form-control" required autocomplete="off" placeholder="Digite o login">
-                                    </p>
-                                    <label for="senha">Senha:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-qrcode text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <input type="password" name="senha" id="senha" class="form-control" required autocomplete="off" placeholder="Digite a senha">
-                                    </p>
-                                    <label for="nivel">Nível:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-th-list text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <select name="nivel" id="nivel" class="form-control" required>
-                                            <option value="com">com</option>
-                                            <option value="adm">adm</option>
-                                            <option value="sup">sup</option>
-                                        </select>
-                                    </p>
-                                    <p class="text-right">
-                                        <input type="submit" value="Cadastrar Usuario" class="btn btn-primary">
+                                        <button type="button" class="btn btn-primary" onclick="window.location.href='reserva_cliente.php'"></button>
                                     </p>
                                 </form>
                             </div>
