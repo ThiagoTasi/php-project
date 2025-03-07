@@ -1,9 +1,69 @@
 <?php
-// Adicione esta linha no topo do arquivo
+// Conexão com o banco de dados
 include '../conn/connect.php';
 
+// Inicia a sessão
+session_start();
 
+// Verifica se o usuário está logado
+// if (!isset($_SESSION['reserva_cliente'])) {
+//     header("Location: reserva_cliente.php");
+//     exit();
+// }
+
+// Função para gerar código único de reserva
+function gerarCodigoReserva() {
+    return strtoupper(uniqid('RES-', true)); // Gera um código único
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['acao'] == 'reserva') {
+    // Recebe os dados do formulário
+    $cliente_id = $_POST['cliente_id']; // ID do cliente (usando sessão ou valor enviado)
+    $data_reserva = $_POST['data_reserva'];
+    $horario = $_POST['horario'];
+    $num_pessoas = $_POST['num_pessoas'];
+    $motivo = $_POST['motivo'];
+    $status = $_POST['status'];
+    $numero_mesa = $_POST['numero_mesa'];
+    $motivo_negativa = isset($_POST['motivo_negativa']) ? $_POST['motivo_negativa'] : ''; // Motivo de negativa (se houver)
+    $codigo_reserva = gerarCodigoReserva(); // Gera o código da reserva
+
+    // Validação de dados
+    if (empty($data_reserva) || empty($horario) || empty($num_pessoas) || empty($numero_mesa) || empty($status)) {
+        echo "<script>alert('Erro: Todos os campos são obrigatórios.');</script>";
+    } else {
+        try {
+            // Prepara a inserção no banco de dados
+            $sql = "INSERT INTO reserva (cliente_id, data_reserva, horario, num_pessoas, motivo, status, numero_mesa, motivo_negativa, codigo_reserva)
+                    VALUES (:cliente_id, :data_reserva, :horario, :num_pessoas, :motivo, :status, :numero_mesa, :motivo_negativa, :codigo_reserva)";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':cliente_id', $cliente_id);
+            $stmt->bindParam(':data_reserva', $data_reserva);
+            $stmt->bindParam(':horario', $horario);
+            $stmt->bindParam(':num_pessoas', $num_pessoas);
+            $stmt->bindParam(':motivo', $motivo);
+            $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':numero_mesa', $numero_mesa);
+            $stmt->bindParam(':motivo_negativa', $motivo_negativa);
+            $stmt->bindParam(':codigo_reserva', $codigo_reserva);
+
+            // Executa a consulta
+            if ($stmt->execute()) {
+                echo "<script>alert('Reserva feita com sucesso! Código da reserva: $codigo_reserva');</script>";
+                // Redirecionar para uma página de confirmação ou lista de reservas
+                header("Location: reservas_lista.php");
+                exit();
+            } else {
+                echo "<script>alert('Erro ao fazer a reserva.');</script>";
+            }
+        } catch (PDOException $e) {
+            echo "<script>alert('Erro: " . $e->getMessage() . "');</script>";
+        }
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 

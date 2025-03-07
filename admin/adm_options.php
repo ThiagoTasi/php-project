@@ -118,8 +118,8 @@
 
             <div class="btn-group btn-group-justified" role="group">
                 <div class="btn-group">
-                    <button class="btn btn-success">
-                        RESERVA
+                <button class="btn btn-default disabled" role="alert" style="cursor: default;">
+                        RESERVAS
                     </button>
                 </div></div><div class="btn-group btn-group-justified" role="group">
                 <div class="btn-group">
@@ -128,13 +128,13 @@
                             LISTAR
                         </button>
                     </a>
-                </div><div class="btn-group">
+                <!-- </div><div class="btn-group">
                     <a href="reserva_insere.php">
                         <button class="btn btn-success">
                             INSERIR
                         </button>
                     </a>
-                </div>
+                </div> -->
 
 
 </div><!-- fecha row -->
