@@ -12,19 +12,20 @@ session_start();
 // }
 
 // Função para gerar código único de reserva
-function gerarCodigoReserva() {
+function gerarCodigoReserva()
+{
     return strtoupper(uniqid('RES-', true)); // Gera um código único
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['acao'] == 'reserva') {
     // Recebe os dados do formulário
-    $cliente_id = $_POST['cliente_id']; // ID do cliente (usando sessão ou valor enviado)
+    $cliente_id = $_POST['idcliente']; // ID do cliente (usando sessão ou valor enviado)
     $data_reserva = $_POST['data_reserva'];
     $horario = $_POST['horario'];
     $num_pessoas = $_POST['num_pessoas'];
     $motivo = $_POST['motivo'];
     $status = $_POST['status'];
-    $numero_mesa = $_POST['numero_mesa'];
+    $numero_mesa = $_POST['num_mesa'];
     $motivo_negativa = isset($_POST['motivo_negativa']) ? $_POST['motivo_negativa'] : ''; // Motivo de negativa (se houver)
     $codigo_reserva = gerarCodigoReserva(); // Gera o código da reserva
 
@@ -34,25 +35,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
     } else {
         try {
             // Prepara a inserção no banco de dados
-            $sql = "INSERT INTO reserva (cliente_id, data_reserva, horario, num_pessoas, motivo, status, numero_mesa, motivo_negativa, codigo_reserva)
-                    VALUES (:cliente_id, :data_reserva, :horario, :num_pessoas, :motivo, :status, :numero_mesa, :motivo_negativa, :codigo_reserva)";
-            
+            $sql = "INSERT INTO reserva (idcliente, data_reserva, horario, num_pessoas, motivo,status, num_mesa, motivo_negativa, cod_reserva)
+                    VALUES (:idcliente, :data_reserva, :horario, :num_pessoas, :motivo, :status, :num_mesa, :motivo_negativa, :cod_reserva)";
+
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':cliente_id', $cliente_id);
+            $stmt->bindParam(':idcliente', $idcliente);
             $stmt->bindParam(':data_reserva', $data_reserva);
             $stmt->bindParam(':horario', $horario);
             $stmt->bindParam(':num_pessoas', $num_pessoas);
             $stmt->bindParam(':motivo', $motivo);
             $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':numero_mesa', $numero_mesa);
+            $stmt->bindParam(':num_mesa', $num_mesa);
             $stmt->bindParam(':motivo_negativa', $motivo_negativa);
-            $stmt->bindParam(':codigo_reserva', $codigo_reserva);
+            $stmt->bindParam(':cod_reserva', $cod_reserva);
 
             // Executa a consulta
             if ($stmt->execute()) {
-                echo "<script>alert('Reserva feita com sucesso! Código da reserva: $codigo_reserva');</script>";
+                echo "<script>alert('Reserva feita com sucesso! Código da reserva: $cod_reserva');</script>";
                 // Redirecionar para uma página de confirmação ou lista de reservas
-                header("Location: reservas_lista.php");
+                header("Location: reserva_lista.php");
                 exit();
             } else {
                 echo "<script>alert('Erro ao fazer a reserva.');</script>";
@@ -93,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
                                     <input type="hidden" name="acao" value="reserva">
 
                                     <!-- cliente_id (campo oculto ou atribuído automaticamente, se necessário) -->
-                                    <input type="hidden" name="cliente_id" id="cliente_id" value="ID_DO_CLIENTE">
+                                    <input type="hidden" name="idcliente" id="idcliente" value="ID_DO_CLIENTE">
 
                                     <!-- Data da reserva -->
                                     <label for="data_reserva">Data da Reserva:</label>
@@ -130,57 +131,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
                                         </span>
                                         <input type="text" name="motivo" id="motivo" class="form-control" maxlength="100" placeholder="Digite o motivo da reserva">
                                     </p>
-
-                                    <!-- Status da reserva -->
-                                    <label for="status">Status da Reserva:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-check text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <select name="status" id="status" class="form-control" required>
-                                            <option value="pendente">Pendente</option>
-                                            <option value="confirmado">Confirmado</option>
-                                            <option value="negado">Negado</option>
-                                            <option value="cancelado">Cancelado</option>
-                                            <option value="expirado">Expirado</option>
-                                        </select>
-                                    </p>
-
-                                    <!-- Número da mesa -->
-                                    <label for="numero_mesa">Número da Mesa:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-th text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <input type="number" name="numero_mesa" id="numero_mesa" class="form-control" required placeholder="Digite o número da mesa">
-                                    </p>
-
-                                    <!-- Motivo da negativa (apenas se o status for 'negado', pode ser preenchido depois) -->
-                                    <label for="motivo_negativa">Motivo da Negativa:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-exclamation-sign text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <input type="text" name="motivo_negativa" id="motivo_negativa" class="form-control" placeholder="Digite o motivo da negativa (se aplicável)">
-                                    </p>
-
-                                    <!-- Código de reserva (gerado automaticamente pelo sistema) -->
-                                    <label for="codigo_reserva">Código da Reserva:</label>
-                                    <p class="input-group">
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-barcode text-info" aria-hidden="true"></span>
-                                        </span>
-                                        <input type="text" name="codigo_reserva" id="codigo_reserva" class="form-control" required readonly placeholder="Código gerado automaticamente">
-                                    </p>
-
                                     <!-- Botões para reservar ou cancelar -->
                                     <p class="text-right">
                                         <button type="submit" value="Reservar" class="btn btn-primary">Reservar</button>
-                                        </p>
+                                    </p>
                                     </p>
                                     <br>
                                     <p class="text-right">
                                         <button type="button" class="btn btn-primary" onclick="window.location.href='reserva_cliente.php'">Cancelar</button>
+                                    </p>
+                                    <p class="text-right">
+                                        <button type="button" class="btn btn-primary" onclick="window.location.href='cliente_insert.php'">Cadastrar</button>
                                     </p>
                                 </form>
                             </div>

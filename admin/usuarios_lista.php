@@ -53,10 +53,10 @@
             <table class="table table-hover table-condensed tbopacidade">
                 <thead>
                     <tr>
-                        <th class="hidden">ID</th>
+                        <th class="hidden">IDUSUARIO</th>
                         <th>LOGIN</th>
                         <th>NÍVEL</th>
-                        <th>
+                        
                             <a href="usuarios_insere.php" target="_self" class="btn btn-block btn-primary btn-xs" role="button">
                                 <span class="hidden-xs">ADICIONAR <br></span>
                                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -74,7 +74,7 @@
                     }
 
                     // Consulta ajustada para a estrutura da tabela
-                    $sql = "SELECT idusuario, login, nivel FROM usuarios";
+                    $sql = "SELECT idusuario, login,senha, nivel FROM usuarios";
                     $result = $conn->query($sql);
 
                     if ($result->num_rows > 0) {

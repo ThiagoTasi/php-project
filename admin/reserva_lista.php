@@ -58,12 +58,12 @@ $numrow = $lista->rowCount();
                                 <td><?php echo $row['num_mesa']; ?></td>
                                 <td><?php echo $row['cod_reserva']; ?></td>
                                 <td>
-                                    <a href="reserva_atualiza.php?idreserva=<?php echo $row['idreserva'] ?>" class="btn btn-warning btn-block btn-xs">
-                                        <span class="hidden-xs">ALTERAR <br></span>
+                                    <a href="reserva_atualiza.php?idreserva=<?php echo $row['cod_reserva'] ?>" class="btn btn-warning btn-block btn-xs">
+                                        <span class="hidden-xs">CONFIRMAR <br></span>
                                         <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                                     </a>
-                                    <button data-nome="<?php echo $row['cod_reserva'] ?>" data-id="<?php echo $row['idreserva'] ?>" class="delete btn btn-danger btn-block btn-xs">
-                                        <span class="hidden-xs">EXCLUIR <br></span>
+                                    <button data-nome="<?php echo $row['cod_reserva'] ?>" data-id="<?php echo $row['cod_reserva'] ?>" class="delete btn btn-danger btn-block btn-xs">
+                                        <span class="hidden-xs">NEGAR <br></span>
                                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                     </button>
                                 </td>
