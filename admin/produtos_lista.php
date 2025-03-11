@@ -26,7 +26,7 @@ $rows= $lista->rowCount();
                 <th>RESUMO</th>
                 <th>VALOR</th>
                 <th>IMAGEM</th>
-                <th>
+                <th>DESTAQUE</th>
                     <a href="produtos_insere.php?id=" target="_self" class="btn btn-block btn-primary btn-xs" role="button">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                         <span class="hidden-xs">ADICIONAR</span>
