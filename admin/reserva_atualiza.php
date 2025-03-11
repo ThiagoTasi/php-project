@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo "Metodo de requisição inválido";
 }
 if (isset($_GET['idreserva'])) {
-    $reserva = $pdo->query("SELECT * FROM reserva WHERE idreserva =" . $_GET['idreserva']);
+    $reserva = $pdo->query("SELECT * FROM reserva WHERE idcliente =" . $_GET['idcliente']);
     $reservarow = $reserva->fetch(PDO::FETCH_ASSOC);
 }
 ?>

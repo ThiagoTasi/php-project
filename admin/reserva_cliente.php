@@ -5,60 +5,59 @@ include '../conn/connect.php';
 // Inicia a sessão
 session_start();
 
-// Verifica se o usuário está logado
-// if (!isset($_SESSION['reserva_cliente'])) {
-//     header("Location: reserva_cliente.php");
-//     exit();
-// }
-
 // Função para gerar código único de reserva
 function gerarCodigoReserva()
 {
-    return strtoupper(uniqid('RES-', true)); // Gera um código único
+    return strtoupper(uniqid('RES-', true));
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['acao'] == 'reserva') {
-    // Recebe os dados do formulário
-    $cliente_id = $_POST['idcliente']; // ID do cliente (usando sessão ou valor enviado)
-    $data_reserva = $_POST['data_reserva'];
-    $horario = $_POST['horario'];
-    $num_pessoas = $_POST['num_pessoas'];
-    $motivo = $_POST['motivo'];
-    $status = $_POST['status'];
-    $numero_mesa = $_POST['num_mesa'];
-    $motivo_negativa = isset($_POST['motivo_negativa']) ? $_POST['motivo_negativa'] : ''; // Motivo de negativa (se houver)
-    $codigo_reserva = gerarCodigoReserva(); // Gera o código da reserva
+    // Recebe os dados do formulário com verificação de existência
+    $idcliente = isset($_SESSION['idcliente']) ? $_SESSION['idcliente'] : null;
+    $data_reserva = isset($_POST['data_reserva']) ? $_POST['data_reserva'] : null;
+    $horario = isset($_POST['horario']) ? $_POST['horario'] : null;
+    $num_pessoas = isset($_POST['num_pessoas']) ? $_POST['num_pessoas'] : null;
+    $motivo = isset($_POST['motivo']) ? $_POST['motivo'] : '';
+    $cod_reserva = gerarCodigoReserva();
+    $status = 'pendente'; // Valor padrão para status
 
-    // Validação de dados
-    if (empty($data_reserva) || empty($horario) || empty($num_pessoas) || empty($numero_mesa) || empty($status)) {
-        echo "<script>alert('Erro: Todos os campos são obrigatórios.');</script>";
+    // Validação de dados (apenas campos do formulário)
+    if (empty($data_reserva) || empty($horario) || empty($num_pessoas)) {
+        echo "<script>alert('Erro: Todos os campos obrigatórios devem ser preenchidos.');</script>";
     } else {
         try {
+            // Se idcliente existe, verifica se é válido
+            if (!empty($idcliente)) {
+                $checkSql = "SELECT idcliente FROM cliente WHERE idcliente = :idcliente";
+                $checkStmt = $pdo->prepare($checkSql);
+                $checkStmt->bindParam(':idcliente', $idcliente);
+                $checkStmt->execute();
+                if ($checkStmt->rowCount() == 0) {
+                    throw new Exception("O ID do cliente ($idcliente) não existe na tabela cliente.");
+                }
+            }
+
             // Prepara a inserção no banco de dados
-            $sql = "INSERT INTO reserva (idcliente, data_reserva, horario, num_pessoas, motivo,status, num_mesa, motivo_negativa, cod_reserva)
-                    VALUES (:idcliente, :data_reserva, :horario, :num_pessoas, :motivo, :status, :num_mesa, :motivo_negativa, :cod_reserva)";
+            $sql = "INSERT INTO reserva (idcliente, data_reserva, horario, num_pessoas, motivo, cod_reserva, status)
+                    VALUES (:idcliente, :data_reserva, :horario, :num_pessoas, :motivo, :cod_reserva, :status)";
 
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':idcliente', $idcliente);
+            $stmt->bindParam(':idcliente', $idcliente, PDO::PARAM_INT | PDO::PARAM_NULL);
             $stmt->bindParam(':data_reserva', $data_reserva);
             $stmt->bindParam(':horario', $horario);
             $stmt->bindParam(':num_pessoas', $num_pessoas);
             $stmt->bindParam(':motivo', $motivo);
-            $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':num_mesa', $num_mesa);
-            $stmt->bindParam(':motivo_negativa', $motivo_negativa);
             $stmt->bindParam(':cod_reserva', $cod_reserva);
+            $stmt->bindParam(':status', $status);
 
-            // Executa a consulta
             if ($stmt->execute()) {
                 echo "<script>alert('Reserva feita com sucesso! Código da reserva: $cod_reserva');</script>";
-                // Redirecionar para uma página de confirmação ou lista de reservas
                 header("Location: reserva_lista.php");
                 exit();
             } else {
                 echo "<script>alert('Erro ao fazer a reserva.');</script>";
             }
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             echo "<script>alert('Erro: " . $e->getMessage() . "');</script>";
         }
     }
@@ -67,7 +66,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,7 +74,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
     <link rel="stylesheet" href="../css/estilo.css" type="text/css">
     <title>Chuleta Quente - Reserva</title>
 </head>
-
 <body>
     <main class="container">
         <section>
@@ -92,9 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
                             <div class="alert alert-info" role="alert">
                                 <form action="reserva_cliente.php" name="form_cadastro" id="form_cadastro" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="acao" value="reserva">
-
-                                    <!-- cliente_id (campo oculto ou atribuído automaticamente, se necessário) -->
-                                    <input type="hidden" name="idcliente" id="idcliente" value="ID_DO_CLIENTE">
 
                                     <!-- Data da reserva -->
                                     <label for="data_reserva">Data da Reserva:</label>
@@ -131,17 +125,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
                                         </span>
                                         <input type="text" name="motivo" id="motivo" class="form-control" maxlength="100" placeholder="Digite o motivo da reserva">
                                     </p>
+
                                     <!-- Botões para reservar ou cancelar -->
                                     <p class="text-right">
-                                        <button type="submit" value="Reservar" class="btn btn-primary">Reservar</button>
-                                    </p>
-                                    </p>
-                                    <br>
-                                    <p class="text-right">
-                                        <button type="button" class="btn btn-primary" onclick="window.location.href='reserva_cliente.php'">Cancelar</button>
-                                    </p>
-                                    <p class="text-right">
-                                        <button type="button" class="btn btn-primary" onclick="window.location.href='cliente_insert.php'">Cadastrar</button>
+                                        <button type="submit" class="btn btn-primary">Reservar</button>
+                                        <button type="button" class="btn btn-primary" onclick="window.location.href=''">Cancelar</button>
                                     </p>
                                 </form>
                             </div>
@@ -151,16 +139,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['acao']) && $_POST['aca
             </article>
         </section>
     </main>
+
+    <!-- Scripts -->
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#form_cadastro').on('submit', function() {
+                console.log('Formulário enviado!');
+            });
+        });
+    </script>
 </body>
-
-</html>
-
-
-
-
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="../js/bootstrap.min.js"></script>
-</body>
-
 </html>
